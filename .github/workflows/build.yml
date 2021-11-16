@@ -17,8 +17,8 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 16
-    - name: Build mod jar
-      run: ./gradlew deploy
+    - name: Build library jar
+      run: ./gradle deploy
     - name: Upload built jar file
       uses: actions/upload-artifact@v2
       with:
