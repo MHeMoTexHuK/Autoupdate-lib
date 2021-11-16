@@ -79,7 +79,7 @@ public class Updater {
 	/** Reads the providen meta-info file and, unless an error occurs, outputs the version & repo to the respective fields of this class */
 	protected static boolean checkInfo(Fi meta) {
 		boolean rfound = false, vfound = false;
-		Reads reads;
+		Reads reads = null;
 		try {
 			reads = meta.reads();
 			byte b;
@@ -134,10 +134,9 @@ public class Updater {
 			return false;
 		} catch (Exception e) {
 			Log.err("Exception occurred while reading mod info: " + meta.name(), e);
-			reads.close();
 			return false;
 		} finally {
-			reads.close();
+			if (reads != null) reads.close();
 		}
 	}
 	
