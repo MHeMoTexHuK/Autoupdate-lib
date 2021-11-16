@@ -10,7 +10,7 @@ import mindustry.mod.*;
 public class Updater {
 	
 	public static final String url = "https://github.com/", urlFile= "/blob/master/", urlDownload = "/archive/master.zip";
-	public static final String prefixversion = "VERSION", prefixRepo = "REPO";
+	public static final String prefixVersion = "VERSION", prefixRepo = "REPO";
 	//temporary builder
 	public static final StringBuilder check = new StringBuilder();
 	
@@ -22,7 +22,7 @@ public class Updater {
 		var file = mod.file;
 		
 		Fi meta = null;
-		if (mod.isDirectory()) {
+		if (file.isDirectory()) {
 			meta = getMeta(file);
 		} else if (file == null) {
 			Log.err("Failed to check updates for: " + mod.name);
@@ -60,8 +60,8 @@ public class Updater {
 					
 					() -> Http.get(url + currentRepo + urlDownload)
 					.error(e -> Vars.ui.showException(e))
-					.submit(response -> {
-						file.writeBytes(response.getResult());
+					.submit(zippedMod -> {
+						file.writeBytes(zippedMod.getResult());
 						Vars.ui.showInfo("Mod " + mod.name + "had been updated succefully. Restart the game to apply changes.");
 					}),
 					
