@@ -1,5 +1,6 @@
 package io.mnemotechnician.autoupdater;
 
+import java.io.*;
 import arc.util.*;
 import arc.files.*;
 import arc.util.io.*;
@@ -9,8 +10,7 @@ import mindustry.mod.*;
 public class Updater {
 	
 	public static final String url = "https://github.com/", urlFile= "/blob/master/", urlDownload = "/archive/master.zip";
-	//used for comparison. I can't just compare String and StringBuilder without toString()-ing
-	public static final StringBuilder prefixVersion = new StringBuilder("VERSION"), prefixRepo = new StringBuilder("REPO");
+	public static final String prefixversion = "VERSION", prefixRepo = "REPO";
 	//temporary builder
 	public static final StringBuilder check = new StringBuilder();
 	
@@ -18,7 +18,7 @@ public class Updater {
 	protected static int version;
 	
 	public static void checkUpdates(Mod originMod) {
-		var mod = Vars.mods.getMod(originMod);
+		var mod = Vars.mods.getMod(originMod.getClass());
 		var file = mod.file;
 		
 		Fi meta = null;
@@ -43,7 +43,7 @@ public class Updater {
 		String currentRepo = repo;
 		
 		//todo: retry upon a non-fatal error?
-		Http.get(url + currentRepo + urlEnd + meta.name(), response -> {
+		Http.get(url + currentRepo + urlFile + meta.name(), response -> {
 			Fi newMeta = Fi.tempFile("meta"); //unfortunately.
 			newMeta.writeBytes(response.getResult());
 			
@@ -59,7 +59,7 @@ public class Updater {
 					"[red]Not now",
 					
 					() -> Http.get(url + currentRepo + urlDownload)
-					.error(e -> Vars.ui.showException("Download failed!"), e)
+					.error(e -> Vars.ui.showException(e))
 					.submit(response -> {
 						file.writeBytes(response.getResult());
 						Vars.ui.showInfo("Mod " + mod.name + "had been updated succefully. Restart the game to apply changes.");
@@ -86,7 +86,7 @@ public class Updater {
 			
 			global:
 			while (!(rfound && vfound)) {
-				if (reads.input.available() < 6) { //6 is the min num of characters for any token (#!A B;)
+				if (((DataInputStream) reads.input).available() < 6) { //6 is the min num of characters for any token (#!A B;)
 					return false;
 				}
 				
@@ -97,7 +97,8 @@ public class Updater {
 				check.setLength(0);
 				while ((b = reads.b()) != ' ') check.append((char) b);
 				
-				if (check.compareTo(prefixVersion)) {
+				String c = check.toString();
+				if (c.equals(prefixVersion)) {
 					check.setLength(0);
 					while ((b = reads.b()) != ';' && b != '\n') {
 						if (!Character.isDigit((char) b)) {
@@ -109,7 +110,7 @@ public class Updater {
 					//internal version only contains digits, thus no exceptions will be thrown... i hope.
 					version = Integer.valueOf(check.toString());
 					vfound = true;
-				} else if (check.compareTo(prefixRepo)) {
+				} else if (c.equals(prefixRepo)) {
 					check.setLength(0);
 					while ((b = reads.b()) != ';' && b != '\n') check.append((char) b);
 					
@@ -121,14 +122,14 @@ public class Updater {
 					repo = check.toString();
 					rfound = true;
 				} else {
-					Log.warn("Unknown control token: #!" + check);
+					Log.warn("Unknown control token: #!" + c);
 					continue;
 				}
 				
 			}
 			
 			return true;
-		} catch (java.io.EOFException e) {
+		} catch (EOFException e) {
 			Log.err("No repo/version specified in " + meta.name() + " (unexpected EOF)");
 			return false;
 		} catch (Exception e) {

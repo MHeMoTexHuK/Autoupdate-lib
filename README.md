@@ -13,6 +13,7 @@ example:
 ```
 #!VERSION 24;
 #!REPO MHeMoTexHuK/New-controls;
+...normal mod info...
 ```
 
 Call Updater.checkUpdates(currentMod) after client load and it'll check whether the repo has a newer version.
