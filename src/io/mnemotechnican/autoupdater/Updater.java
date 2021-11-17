@@ -17,6 +17,10 @@ public class Updater {
 	protected static String repo;
 	protected static int version;
 	
+	//used for Relfect.invoke
+	static Object[] args = {null, (Boolean) false};
+	static Class[] args2 = {String.class, Boolean.class};
+	
 	public static void checkUpdates(Mod originMod) {
 		var mod = Vars.mods.getMod(originMod.getClass());
 		var file = mod.file;
@@ -58,12 +62,10 @@ public class Updater {
 					"[green]Update",
 					"[red]Not now",
 					
-					() -> Http.get(url + currentRepo + urlDownload)
-					.error(e -> Vars.ui.showException(e))
-					.submit(zippedMod -> {
-						file.writeBytes(zippedMod.getResult());
-						Vars.ui.showInfo("Mod " + mod.name + "had been updated succefully. Restart the game to apply changes.");
-					}),
+					() -> {
+						args[0] = repo;
+						Reflect.invoke(Vars.ui.mods, "githubImportMod", args, args2);
+					}
 					
 					() -> {}
 				);
