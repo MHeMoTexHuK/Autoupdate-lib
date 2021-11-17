@@ -36,7 +36,7 @@ dependencies{
     annotationProcessor "com.github.Anuken:jabel:$jabelVersion"
 }
 
-task jarAndroid{
+/*task jarAndroid{
     dependsOn "jar"
 
     doLast{
@@ -53,7 +53,7 @@ task jarAndroid{
         "d8 $dependencies --min-api 14 --output ${project.archivesBaseName}Android.jar ${project.archivesBaseName}Desktop.jar"
             .execute(null, new File("$buildDir/libs")).waitForProcessOutput(System.out, System.err)
     }
-}
+}*/
 
 jar{
     archiveFileName = "${project.archivesBaseName}Desktop.jar"
@@ -64,7 +64,7 @@ jar{
 }
 
 task deploy(type: Jar){
-    dependsOn jarAndroid
+    //dependsOn jarAndroid
     dependsOn jar
     archiveFileName = "${project.archivesBaseName}.jar"
 
@@ -73,7 +73,7 @@ task deploy(type: Jar){
     doLast{
         delete{
             delete "$buildDir/libs/${project.archivesBaseName}Desktop.jar"
-            delete "$buildDir/libs/${project.archivesBaseName}Android.jar"
+            //delete "$buildDir/libs/${project.archivesBaseName}Android.jar"
         }
     }
 }
