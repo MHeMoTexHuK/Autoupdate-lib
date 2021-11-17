@@ -9,7 +9,8 @@ import mindustry.mod.*;
 
 public class Updater {
 	
-	public static final String url = "https://github.com/", urlFile= "/blob/master/", urlDownload = "/archive/master.zip";
+	//todo: support for non-standard branches?
+	public static final String url = "https://github.com/", urlFile= "/blob/master/";
 	public static final String prefixVersion = "VERSION", prefixRepo = "REPO";
 	//temporary builder
 	public static final StringBuilder check = new StringBuilder();
@@ -18,8 +19,8 @@ public class Updater {
 	protected static int version;
 	
 	//used for Relfect.invoke
-	static Object[] args = {null, (Boolean) false};
-	static Class[] args2 = {String.class, Boolean.class};
+	static Object[] args = {null, false};
+	static Class[] args2 = {String.class, boolean.class};
 	
 	public static void checkUpdates(Mod originMod) {
 		var mod = Vars.mods.getMod(originMod.getClass());
