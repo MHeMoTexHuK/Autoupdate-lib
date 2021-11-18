@@ -43,10 +43,10 @@ public class Updater {
 		float currentVersion = -1;
 		String currentRepo = null;
 		try {
-			currentVersion = (Float) info.get(tokenVersion, -1);
+			currentVersion = (Float) info.get(tokenVersion, -1f);
 			currentRepo = String.valueOf(info.get(tokenRepo, null));
-		} catch (NumberFormatException e) {
-			Log.err("Incorrect token value type!");
+		} catch (Exception e) {
+			Log.err("Incorrect token value!");
 			Log.err(e.toString()); //no need to print stack trace
 			return;
 		}
@@ -82,10 +82,10 @@ public class Updater {
 		float newVersion = -1;
 		String newRepo = null; //migration support
 		try {
-			newVersion = (Float) info.get(tokenVersion, -1);
+			newVersion = (Float) info.get(tokenVersion, -1f);
 			newRepo = String.valueOf(info.get(tokenRepo, null));
-		} catch (ClassCastException e) {
-			Log.err("Incorrect token value type (remote file)!");
+		} catch (Exception e) {
+			Log.err("Incorrect token value (remote file)!");
 			Log.err(e.toString()); //no need to print stack trace
 			return;
 		}
