@@ -43,7 +43,7 @@ public class Updater {
 		float currentVersion = -1;
 		String currentRepo = null;
 		try {
-			currentVersion = Float.valueOf(info.get(tokenVersion, -1));
+			currentVersion = (float) info.get(tokenVersion, -1);
 			currentRepo = String.valueOf(info.get(tokenRepo, null));
 		} catch (NumberFormatException e) {
 			Log.err("Incorrect token value type!");
@@ -83,9 +83,9 @@ public class Updater {
 		String newRepo = null; //migration support
 		try {
 			newVersion = (float) info.get(tokenVersion, -1);
-			newRepo = (String) info.get(tokenRepo, null);
+			newRepo = String.valueOf(info.get(tokenRepo, null));
 		} catch (ClassCastException e) {
-			Log.err("Incorrect token value type!");
+			Log.err("Incorrect token value type (remote file)!");
 			Log.err(e.toString()); //no need to print stack trace
 			return;
 		}
@@ -167,14 +167,8 @@ public class Updater {
 					}
 					
 					try {
-						if (hasPoint) {
-							float value = Float.valueOf(check.toString());
-							map.put(key, value);
-							
-						} else {
-							int value = Integer.valueOf(check.toString());
-							map.put(key, value);
-						}
+						float value = Float.valueOf(check.toString());
+						map.put(key, value);
 					} catch (Throwable e) {
 						continue global; //somehow they managed to break this failsafe system, ignore this token
 					}
