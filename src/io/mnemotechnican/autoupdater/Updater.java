@@ -58,9 +58,9 @@ public class Updater {
 		.error(e -> {
 			//try to find it in the assets folder
 			Http.get(url + currentRepo + "/blob/master/assets/mod.hjson")
-			.error(e -> {
+			.error(ee -> {
 				Log.err("Couldn't fetch the remote metainfo file!");
-				Log.err(e);
+				Log.err(ee);
 			})
 			.submit(r -> {
 				temp.writeBytes(r.getResult());
