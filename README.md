@@ -1,5 +1,7 @@
 ## Autoupdate lib
-Allows any mindustry mods to easily check for updates.
+Allows any mindustry java mods to easily check for updates.
+
+This thing is incomplete. Currently it doesn't support non-standard 
 
 ## Usage
 The jar must be added to the mod as an implementation dependency in order for it to work.
@@ -9,21 +11,21 @@ Theres a simple way to add it:
 3. Add the following lines to your `build.gradle` file:
 ```
 dependencies {
-	implementation fileTree(include: ['*.jar'], dir: 'lib')
+	implementation files("lib/Autoupdate-lib.jar")
 }
 ```
 If `dependencies` block already exists in your gradle file (and it probably does),
 you should only add the `implementation...` line to the existing block.
 
-You must also specify the following lines in your `mod.(h)json` file:
+You must also specify the following lines in your `mod.(h)json` file. The file must be placed either in the root of your mod or in assets folder.
 ```
-#!VERSION integer_version;
-#!REPO author/repo;
+#!VERSION version
+#!REPO "author/repo"
 ```
 example:
 ```
-#!VERSION 24;
-#!REPO MHeMoTexHuK/New-controls;
+#!VERSION 24
+#!REPO "MHeMoTexHuK/New-controls"
 ...normal mod info...
 ```
 

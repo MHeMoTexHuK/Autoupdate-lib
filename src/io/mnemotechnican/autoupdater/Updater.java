@@ -1,6 +1,7 @@
 package io.mnemotechnician.autoupdater;
 
 import java.io.*;
+import arc.struct.*;
 import arc.util.*;
 import arc.files.*;
 import arc.util.io.*;
@@ -10,17 +11,14 @@ import mindustry.mod.*;
 public class Updater {
 	
 	//todo: support for non-standard branches?
-	public static final String url = "https://github.com/", urlFile= "/blob/master/";
-	public static final String prefixVersion = "VERSION", prefixRepo = "REPO";
+	public static final String url = "https://github.com/";
+	public static final String tokenVersion = "VERSION", tokenRepo = "REPO";
 	//temporary builder
 	public static final StringBuilder check = new StringBuilder();
 	
-	protected static String repo;
-	protected static int version;
-	
 	//used for Relfect.invoke
-	static Object[] args = {null, false};
-	static Class[] args2 = {String.class, boolean.class};
+	static final Object[] args = {null, false};
+	static final Class[] args2 = {String.class, boolean.class};
 	
 	public static void checkUpdates(Mod originMod) {
 		var mod = Vars.mods.getMod(originMod.getClass());
@@ -44,34 +42,81 @@ public class Updater {
 		if (!checkInfo(meta)) {
 			return;
 		}
-		int currentVersion = version;
-		String currentRepo = repo;
 		
-		//todo: retry upon a non-fatal error?
-		Http.get(url + currentRepo + urlFile + meta.name(), response -> {
-			Fi newMeta = Fi.tempFile("meta"); //unfortunately.
-			newMeta.writeBytes(response.getResult());
+		ObjectMap<String, Object> info = readInfo(meta);
+		float currentVersion = -1;
+		String currentVersion = null;
+		try {
+			currentVersion = (float) info.get(tokenVersion, -1);
+			currentRepo = (String) info.get(tokenRepo, null);
+		} catch (ClassCastException e) {
+			Log.err("Incorrect token value type!");
+			Log.err(e.toString()); //no need to print stack trace
+			return;
+		}
+		if (!validate(currentVersion, currentRepo)) return;
+		
+		Fi temp = Fi.tempFile("update-check");
+		//try to find the file in the root
+		Http.get(url + currentRepo + "/blob/master/mod.hjson")
+		.error(e -> {
+			//try to find it in the assets folder
+			Http.get(url + currentRepo + "/blob/master/assets/mod.hjson")
+			.error(e -> {
+				Log.err("Couldn't fetch the remote metainfo file!");
+				Log.err(e);
+			})
+			.submit(r -> {
+				temp.writeBytes(r.getResult());
+				tryUpdate(temp, currentVersion, mod);
+			});
+		})
+		.submit(r -> {
+			temp.writeBytes(r.getResult());
+			tryUpdate(temp, currentVersion, mod);
+		})
+	}
+	
+	protected static void try tryUpdate(Fi metainfo, float currentVersion, Mods.LoadedMod mod) {
+		ObjectMap<String, Object> info = readInfo(metainfo);
+		float newVersion;
+		String newRepo; //migration support
+		try {
+			currentVersion = (float) info.get(tokenVersion, -1);
+			currentRepo = (String) info.get(tokenRepo, null);
+		} catch (ClassCastException e) {
+			Log.err("Incorrect token value type!");
+			Log.err(e.toString()); //no need to print stack trace
+			return;
+		}
+		if (!validate(newVersion, newRepo)) return;
+		
+		Vars.ui.showCustomConfirm(
+			"Update available",
+			"New version of " + mod.name + " available!",
+			"[green]Update",
+			"[red]Not now",
 			
-			if (!checkInfo(newMeta)) {
-				return;
-			}
+			() -> {
+				args[0] = repo;
+				Reflect.invoke(Vars.ui.mods, "githubImportMod", args, args2);
+			},
 			
-			if (currentVersion < version) {
-				Vars.ui.showCustomConfirm(
-					"Update available",
-					"New version of " + mod.name + " available!",
-					"[green]Update",
-					"[red]Not now",
-					
-					() -> {
-						args[0] = repo;
-						Reflect.invoke(Vars.ui.mods, "githubImportMod", args, args2);
-					},
-					
-					() -> {}
-				);
-			}
-		});
+			() -> {}
+		);
+	}
+	
+	/** Returns whether the hhh is valid. Prints to console if it isn't. */
+	protected static boolean validate(float currentVersion, String currentRepo) {
+		if (currentVersion == -1 || currentRepo == null) {
+			Log.err("You must specify both current version and repo in your mod.hjson file!");
+			Log.err("Specify \"#!VERSION number;\" and \"#!REPO user/repository\" in your mod.hjson file and try again!");
+			return false;
+		} else if (currentRepo.indexOf("/") == -1 || currentRepo.lastIndexOf("/") != current.indexOf("/")) {
+			Log.err("Malformed repository path! Repo must contain only 1 slash character!");
+			return false;
+		}
+		return true;
 	}
 	
 	public static Fi getMeta(Fi root) {
@@ -79,67 +124,68 @@ public class Updater {
 			: root.child("mod.json").exists() ? root.child("mod.json") : null;
 	}
 	
-	/** Reads the providen meta-info file and, unless an error occurs, outputs the version & repo to the respective fields of this class */
-	protected static boolean checkInfo(Fi meta) {
-		boolean rfound = false, vfound = false;
-		Reads reads = null;
+	/** Reads the providen meta-info file and, unless an error occurs, returns an ObjectMap containing all control tokens and their respective values */
+	protected static ObjectMap<String, Object> readInfo(Fi meta) {
+		ObjectMap<String, Object> map = new ObjectMap(8);
+		InputStream read = null;
 		try {
-			reads = meta.reads();
+			read = meta.read();
+			check.setLength(0);
 			byte b;
 			
 			global:
-			while (!(rfound && vfound)) {
-				if (((DataInputStream) reads.input).available() < 6) { //6 is the min num of characters for any token (#!A B;)
-					return false;
+			while (b != -1) {
+				//skip to the next #!. ##! will be ignored.
+				while ((b = read.read()) != '#' || b != '!')) {
+					if (b == -1) break global;
+					if (b == '\\') read.read(); //skip next character
 				}
 				
-				//skip to the next #! mark. ##! will be ignored, that's intended.
-				while (reads.b() != '#' || reads.b() != '!');
-				
-				//read control token
+				//read token name
+				while ((b = read.read()) != ' ') {
+					if (b == -1) break global;
+					check.append((char) b);
+				}
+				String key = check.toString();
 				check.setLength(0);
-				while ((b = reads.b()) != ' ') check.append((char) b);
 				
-				String c = check.toString();
-				if (c.equals(prefixVersion)) {
-					check.setLength(0);
-					while ((b = reads.b()) != ';' && b != '\n') {
-						if (!Character.isDigit((char) b)) {
-							Log.warn("Version must be an integer and can only contain digits, skipping");
-							continue global;
-						}
+				//read token value. can be a string or an integer/float
+				b = read.read();
+				if (b == '"') { //it's a string, read till the next " symbol
+					while ((b = read.read()) != '"'') {
+						if (b == -1) break global;
 						check.append((char) b);
 					}
-					//internal version only contains digits, thus no exceptions will be thrown... i hope.
-					version = Integer.valueOf(check.toString());
-					vfound = true;
-				} else if (c.equals(prefixRepo)) {
-					check.setLength(0);
-					while ((b = reads.b()) != ';' && b != '\n') check.append((char) b);
-					
-					if (check.indexOf("/") < 1) {
-						Log.warn("Repo must be in format of AUTHOR/REPOSITY_NAME, skipping");
-						continue global;
+					String value = check.toString();
+					map.put(key, value);
+				} else if (Character.isDigit((char) b)) { //it's a number, read as long as possible
+					boolean hasPoint = false;
+					while (Character.isDigit(b = read.read()) || (b == '.' && !hasPoint && (hasPoint = true))) {
+						if (b == -1) break global;
+						check.append((byte) b);
 					}
 					
-					repo = check.toString();
-					rfound = true;
-				} else {
-					Log.warn("Unknown control token: #!" + c);
-					continue;
+					try {
+						if (hasPoint) {
+							float value = Float.valueOf(check.toString());
+							map.put(key, value);
+							
+						} else {
+							int value = Integer.valueOf(check.toString());
+							map.put(key, value);
+						}
+					} catch (Throwable e) {
+						continue global; //somehow they managed to break this failsafe system, ignore this token
+					}
 				}
-				
 			}
 			
-			return true;
-		} catch (EOFException e) {
-			Log.err("No repo/version specified in " + meta.name() + " (unexpected EOF)");
-			return false;
+			return map;
 		} catch (Exception e) {
 			Log.err("Exception occurred while reading mod info: " + meta.name(), e);
-			return false;
+			return null;
 		} finally {
-			if (reads != null) reads.close();
+			if (read != null) read.close();
 		}
 	}
 	
