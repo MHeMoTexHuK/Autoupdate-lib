@@ -43,7 +43,7 @@ public class Updater {
 		float currentVersion = -1;
 		String currentRepo = null;
 		try {
-			currentVersion = (float) info.get(tokenVersion, -1);
+			currentVersion = (Float) info.get(tokenVersion, -1);
 			currentRepo = String.valueOf(info.get(tokenRepo, null));
 		} catch (NumberFormatException e) {
 			Log.err("Incorrect token value type!");
@@ -82,7 +82,7 @@ public class Updater {
 		float newVersion = -1;
 		String newRepo = null; //migration support
 		try {
-			newVersion = (float) info.get(tokenVersion, -1);
+			newVersion = (Float) info.get(tokenVersion, -1);
 			newRepo = String.valueOf(info.get(tokenRepo, null));
 		} catch (ClassCastException e) {
 			Log.err("Incorrect token value type (remote file)!");
@@ -127,7 +127,7 @@ public class Updater {
 	
 	/** Reads the providen meta-info file and, unless an error occurs, returns an ObjectMap containing all control tokens and their respective values */
 	protected static ObjectMap<String, Object> readInfo(Fi meta) {
-		ObjectMap<String, Object> map = new ObjectMap(8);
+		ObjectMap<String, Object> map = new ObjectMap(4);
 		InputStream read = null;
 		try {
 			read = meta.read();
@@ -150,7 +150,7 @@ public class Updater {
 				String key = check.toString();
 				check.setLength(0);
 				
-				//read token value. can be a string or an integer/float
+				//read token value. can be a string or a float.
 				b = read.read();
 				if (b == '"') { //it's a string, read till the next " symbol
 					while ((b = read.read()) != '"') {

@@ -30,4 +30,7 @@ example:
 Call Updater.checkUpdates(currentMod) after client load and it'll check whether the repo has a newer version.
 If it has, it'll prompt the user to automatically update it and will download & install it.
 
+Note that the library checks the latest commit, ***but downloads the latest release***.
+Thus, you should only update #!VERSION upon a release, or else players would receive phantom update notifications.
+
 TODO: upload the artifact to maven or smth?
