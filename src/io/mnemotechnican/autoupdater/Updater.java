@@ -43,9 +43,9 @@ public class Updater {
 		float currentVersion = -1;
 		String currentRepo = null;
 		try {
-			currentVersion = (float) info.get(tokenVersion, -1);
-			currentRepo = (String) info.get(tokenRepo, null);
-		} catch (ClassCastException e) {
+			currentVersion = Float.valueOf(info.get(tokenVersion, -1));
+			currentRepo = String.valueOf(info.get(tokenRepo, null));
+		} catch (NumberFormatException e) {
 			Log.err("Incorrect token value type!");
 			Log.err(e.toString()); //no need to print stack trace
 			return;
