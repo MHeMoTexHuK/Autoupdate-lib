@@ -1,8 +1,6 @@
 ## Autoupdate lib
 Allows any mindustry java mods to easily check for updates.
 
-This thing is incomplete. Currently it doesn't support non-standard 
-
 ## Usage
 The jar must be added to the mod as an implementation dependency in order for it to work.
 Theres a simple way to add it:

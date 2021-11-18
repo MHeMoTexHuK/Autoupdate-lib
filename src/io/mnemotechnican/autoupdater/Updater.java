@@ -52,24 +52,28 @@ public class Updater {
 		}
 		if (!validate(currentVersion, currentRepo)) return;
 		
+		//FUCKKKKKKKKKKKKKKKKKKKKING LAMBDAS
+		final float vfinal = currentVersion;
+		final String rfinal = currentRepo;
+		
 		Fi temp = Fi.tempFile("update-check");
 		//try to find the file in the root
-		Http.get(url + currentRepo + "/blob/master/mod.hjson")
+		Http.get(url + rfinal + "/blob/master/mod.hjson")
 		.error(e -> {
 			//try to find it in the assets folder
-			Http.get(url + currentRepo + "/blob/master/assets/mod.hjson")
+			Http.get(url + rfinal + "/blob/master/assets/mod.hjson")
 			.error(ee -> {
 				Log.err("Couldn't fetch the remote metainfo file!");
 				Log.err(ee);
 			})
 			.submit(r -> {
 				temp.writeBytes(r.getResult());
-				tryUpdate(temp, currentVersion, mod);
+				tryUpdate(temp, vfinal, mod);
 			});
 		})
 		.submit(r -> {
 			temp.writeBytes(r.getResult());
-			tryUpdate(temp, currentVersion, mod);
+			tryUpdate(temp, vfinal, mod);
 		});
 	}
 	
@@ -87,6 +91,7 @@ public class Updater {
 		}
 		if (!validate(newVersion, newRepo)) return;
 		
+		final String nrfinal = newRepo; //I FUCKING CAN'T
 		Vars.ui.showCustomConfirm(
 			"Update available",
 			"New version of " + mod.name + " available!",
@@ -94,7 +99,7 @@ public class Updater {
 			"[red]Not now",
 			
 			() -> {
-				args[0] = newRepo;
+				args[0] = nrfinal;
 				Reflect.invoke(Vars.ui.mods, "githubImportMod", args, args2);
 			},
 			
@@ -127,7 +132,7 @@ public class Updater {
 		try {
 			read = meta.read();
 			check.setLength(0);
-			int b;
+			int b = 0;
 			
 			global:
 			while (b != -1) {
@@ -181,7 +186,12 @@ public class Updater {
 			Log.err("Exception occurred while reading mod info: " + meta.name(), e);
 			return null;
 		} finally {
-			if (read != null) read.close();
+			try {
+				if (read != null) read.close();
+			} catch (Throwable e) {
+				Log.info("fuck checked exceptions");
+				throw new RuntimeException(e);
+			}
 		}
 	}
 	
