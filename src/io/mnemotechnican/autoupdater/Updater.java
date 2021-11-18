@@ -178,7 +178,7 @@ public class Updater {
 			return map;
 		} catch (Exception e) {
 			Log.err("Exception occurred while reading mod info: " + meta.name(), e);
-			return null;
+			return map;
 		} finally {
 			try {
 				if (read != null) read.close();
