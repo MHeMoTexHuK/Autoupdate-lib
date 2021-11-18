@@ -44,7 +44,7 @@ public class Updater {
 		String currentRepo = null;
 		try {
 			currentVersion = (Float) info.get(tokenVersion, -1f);
-			currentRepo = String.valueOf(info.get(tokenRepo, null));
+			currentRepo = String.valueOf(info.get(tokenRepo, ""));
 		} catch (Exception e) {
 			Log.err("Incorrect token value!");
 			Log.err(e.toString()); //no need to print stack trace
@@ -109,7 +109,7 @@ public class Updater {
 	
 	/** Returns whether the hhh is valid. Prints to console if it isn't. */
 	protected static boolean validate(float currentVersion, String currentRepo) {
-		if (currentVersion == -1 || currentRepo == null) {
+		if (currentVersion == -1 || currentRepo.equals("")) {
 			Log.err("You must specify both current version and repo in your mod.hjson file!");
 			Log.err("Specify \"#!VERSION number;\" and \"#!REPO user/repository\" in your mod.hjson file and try again!");
 			return false;
@@ -137,7 +137,7 @@ public class Updater {
 			global:
 			while (b != -1) {
 				//skip to the next #!. ##! will be ignored.
-				while ((b = read.read()) != '#' || b != '!'){
+				while ((b = read.read()) != '#' || (b = read.read()) != '!'){
 					if (b == -1) break global;
 					if (b == '\\') read.read(); //skip next character
 				}
