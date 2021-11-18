@@ -39,13 +39,9 @@ public class Updater {
 			return;
 		}
 		
-		if (!checkInfo(meta)) {
-			return;
-		}
-		
 		ObjectMap<String, Object> info = readInfo(meta);
 		float currentVersion = -1;
-		String currentVersion = null;
+		String currentRepo = null;
 		try {
 			currentVersion = (float) info.get(tokenVersion, -1);
 			currentRepo = (String) info.get(tokenRepo, null);
@@ -79,11 +75,11 @@ public class Updater {
 	
 	protected static void tryUpdate(Fi metainfo, float currentVersion, Mods.LoadedMod mod) {
 		ObjectMap<String, Object> info = readInfo(metainfo);
-		float newVersion;
-		String newRepo; //migration support
+		float newVersion = -1;
+		String newRepo = null; //migration support
 		try {
-			currentVersion = (float) info.get(tokenVersion, -1);
-			currentRepo = (String) info.get(tokenRepo, null);
+			newVersion = (float) info.get(tokenVersion, -1);
+			newRepo = (String) info.get(tokenRepo, null);
 		} catch (ClassCastException e) {
 			Log.err("Incorrect token value type!");
 			Log.err(e.toString()); //no need to print stack trace
@@ -98,7 +94,7 @@ public class Updater {
 			"[red]Not now",
 			
 			() -> {
-				args[0] = repo;
+				args[0] = newRepo;
 				Reflect.invoke(Vars.ui.mods, "githubImportMod", args, args2);
 			},
 			
@@ -112,7 +108,7 @@ public class Updater {
 			Log.err("You must specify both current version and repo in your mod.hjson file!");
 			Log.err("Specify \"#!VERSION number;\" and \"#!REPO user/repository\" in your mod.hjson file and try again!");
 			return false;
-		} else if (currentRepo.indexOf("/") == -1 || currentRepo.lastIndexOf("/") != current.indexOf("/")) {
+		} else if (currentRepo.indexOf("/") == -1 || currentRepo.lastIndexOf("/") != currentRepo.indexOf("/")) {
 			Log.err("Malformed repository path! Repo must contain only 1 slash character!");
 			return false;
 		}
@@ -131,7 +127,7 @@ public class Updater {
 		try {
 			read = meta.read();
 			check.setLength(0);
-			byte b;
+			int b;
 			
 			global:
 			while (b != -1) {
