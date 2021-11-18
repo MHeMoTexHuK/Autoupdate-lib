@@ -74,10 +74,10 @@ public class Updater {
 		.submit(r -> {
 			temp.writeBytes(r.getResult());
 			tryUpdate(temp, currentVersion, mod);
-		})
+		});
 	}
 	
-	protected static void try tryUpdate(Fi metainfo, float currentVersion, Mods.LoadedMod mod) {
+	protected static void tryUpdate(Fi metainfo, float currentVersion, Mods.LoadedMod mod) {
 		ObjectMap<String, Object> info = readInfo(metainfo);
 		float newVersion;
 		String newRepo; //migration support
@@ -136,7 +136,7 @@ public class Updater {
 			global:
 			while (b != -1) {
 				//skip to the next #!. ##! will be ignored.
-				while ((b = read.read()) != '#' || b != '!')) {
+				while ((b = read.read()) != '#' || b != '!'){
 					if (b == -1) break global;
 					if (b == '\\') read.read(); //skip next character
 				}
@@ -152,7 +152,7 @@ public class Updater {
 				//read token value. can be a string or an integer/float
 				b = read.read();
 				if (b == '"') { //it's a string, read till the next " symbol
-					while ((b = read.read()) != '"'') {
+					while ((b = read.read()) != '"') {
 						if (b == -1) break global;
 						check.append((char) b);
 					}
