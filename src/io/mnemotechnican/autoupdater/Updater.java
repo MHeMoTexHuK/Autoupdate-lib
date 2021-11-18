@@ -83,7 +83,7 @@ public class Updater {
 		String newRepo = null; //migration support
 		try {
 			newVersion = (Float) info.get(tokenVersion, -1f);
-			newRepo = String.valueOf(info.get(tokenRepo, null));
+			newRepo = String.valueOf(info.get(tokenRepo, ""));
 		} catch (Exception e) {
 			Log.err("Incorrect token value (remote file)!");
 			Log.err(e.toString()); //no need to print stack trace
@@ -111,7 +111,7 @@ public class Updater {
 	protected static boolean validate(float currentVersion, String currentRepo) {
 		if (currentVersion == -1 || currentRepo.equals("")) {
 			Log.err("You must specify both current version and repo in your mod.hjson file!");
-			Log.err("Specify \"#!VERSION number;\" and \"#!REPO user/repository\" in your mod.hjson file and try again!");
+			Log.err("Specify '#!VERSION number;' and '#!REPO \"user/repository\"' in your mod.hjson file and try again!");
 			return false;
 		} else if (currentRepo.indexOf("/") == -1 || currentRepo.lastIndexOf("/") != currentRepo.indexOf("/")) {
 			Log.err("Malformed repository path! Repo must contain only 1 slash character!");
@@ -161,7 +161,7 @@ public class Updater {
 					map.put(key, value);
 				} else if (Character.isDigit((char) b)) { //it's a number, read as long as possible
 					boolean hasPoint = false;
-					while (Character.isDigit(b = read.read()) || (b == '.' && !hasPoint && (hasPoint = true))) {
+					while (Character.isDigit((char) (b = read.read())) || (b == '.' && !hasPoint && (hasPoint = true))) {
 						if (b == -1) break global;
 						check.append((byte) b);
 					}
