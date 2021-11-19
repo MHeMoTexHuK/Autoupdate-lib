@@ -94,20 +94,22 @@ public class Updater {
 		}
 		if (!validate(newVersion, newRepo)) return;
 		
-		final String nrfinal = newRepo; //I FUCKING CAN'T
-		Vars.ui.showCustomConfirm(
-			"Update available",
-			"New version of " + mod.name + " available!",
-			"[green]Update",
-			"[red]Not now",
-			
-			() -> {
-				args[0] = nrfinal;
-				Reflect.invoke(Vars.ui.mods, "githubImportMod", args, args2);
-			},
-			
-			() -> {}
-		);
+		if (newVersion > currentVersion) {
+			final String nrfinal = newRepo; //I FUCKING CAN'T
+			Vars.ui.showCustomConfirm(
+				"Update available",
+				"New version of " + mod.name + " available!",
+				"[green]Update",
+				"[red]Not now",
+				
+				() -> {
+					args[0] = nrfinal;
+					Reflect.invoke(Vars.ui.mods, "githubImportMod", args, args2);
+				},
+				
+				() -> {}
+			);
+		}
 	}
 	
 	/** Returns whether the hhh is valid. Prints to console if it isn't. */
@@ -165,7 +167,6 @@ public class Updater {
 						check.append((char) b);
 					}
 					String value = check.toString();
-					Log.info("key " + key + " value " + value);
 					map.put(key, value);
 				} else if (Character.isDigit((char) b)) { //it's a number, read as long as possible
 					check.append((char) b);
@@ -177,8 +178,6 @@ public class Updater {
 					
 					try {
 						float value = Float.valueOf(check.toString());
-						
-						Log.info("key " + key + " value " + value);
 						map.put(key, value);
 					} catch (Throwable e) {
 						continue global; //somehow they managed to break this failsafe system, ignore this token
