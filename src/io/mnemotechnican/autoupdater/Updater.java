@@ -111,7 +111,7 @@ public class Updater {
 	protected static boolean validate(float currentVersion, String currentRepo) {
 		if (currentVersion == -1 || currentRepo.equals("")) {
 			Log.err("You must specify both current version and repo in your mod.hjson file!");
-			Log.err("Specify '#!VERSION number;' and '#!REPO \"user/repository\"' in your mod.hjson file and try again!");
+			Log.err("Specify '#!" + tokenVersion + " number;' and '#!" + prefixRepo + " \"user/repository\"' in your mod.hjson file and try again!");
 			Log.err("Version: " + currentVersion + ", repo: " + currentRepo);
 			return false;
 		} else if (currentRepo.indexOf("/") == -1 || currentRepo.lastIndexOf("/") != currentRepo.indexOf("/")) {
@@ -144,6 +144,7 @@ public class Updater {
 				}
 				
 				//read token name
+				
 				while ((b = read.read()) != ' ') {
 					if (b == -1) break global;
 					check.append((char) b);
@@ -159,6 +160,7 @@ public class Updater {
 						check.append((char) b);
 					}
 					String value = check.toString();
+					Log.info("key " + key + " value " + value);
 					map.put(key, value);
 				} else if (Character.isDigit((char) b)) { //it's a number, read as long as possible
 					check.append((char) b);
@@ -170,6 +172,8 @@ public class Updater {
 					
 					try {
 						float value = Float.valueOf(check.toString());
+						
+						Log.info("key " + key + " value " + value);
 						map.put(key, value);
 					} catch (Throwable e) {
 						continue global; //somehow they managed to break this failsafe system, ignore this token
