@@ -58,10 +58,10 @@ public class Updater {
 		
 		Fi temp = Fi.tempFile("update-check");
 		//try to find the file in the root
-		Http.get(url + rfinal + "/master/" + file.name())
+		Http.get(url + rfinal + "/master/" + meta.name())
 		.error(e -> {
 			//try to find it in the assets folder
-			Http.get(url + rfinal + "/master/assets/" + file.name())
+			Http.get(url + rfinal + "/master/assets/" + meta.name())
 			.error(ee -> {
 				Log.err("Couldn't fetch the remote metainfo file!");
 				Log.err(ee);
