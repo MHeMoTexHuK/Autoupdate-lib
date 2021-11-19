@@ -112,6 +112,7 @@ public class Updater {
 		if (currentVersion == -1 || currentRepo.equals("")) {
 			Log.err("You must specify both current version and repo in your mod.hjson file!");
 			Log.err("Specify '#!VERSION number;' and '#!REPO \"user/repository\"' in your mod.hjson file and try again!");
+			Log.err("Version: " + currentVersion + ", repo: " + currentRepo);
 			return false;
 		} else if (currentRepo.indexOf("/") == -1 || currentRepo.lastIndexOf("/") != currentRepo.indexOf("/")) {
 			Log.err("Malformed repository path! Repo must contain only 1 slash character!");
@@ -153,17 +154,18 @@ public class Updater {
 				//read token value. can be a string or a float.
 				b = read.read();
 				if (b == '"') { //it's a string, read till the next " symbol
-					while ((b = read.read()) != '"') {
+					while ((b = read.read()) != '"' && b != '\n') {
 						if (b == -1) break global;
 						check.append((char) b);
 					}
 					String value = check.toString();
 					map.put(key, value);
 				} else if (Character.isDigit((char) b)) { //it's a number, read as long as possible
+					check.append((char) b);
 					boolean hasPoint = false;
 					while (Character.isDigit((char) (b = read.read())) || (b == '.' && !hasPoint && (hasPoint = true))) {
 						if (b == -1) break global;
-						check.append((byte) b);
+						check.append((char) b);
 					}
 					
 					try {
