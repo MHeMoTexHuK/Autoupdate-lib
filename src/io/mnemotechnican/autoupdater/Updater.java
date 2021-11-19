@@ -11,7 +11,7 @@ import mindustry.mod.*;
 public class Updater {
 	
 	//todo: support for non-standard branches?
-	public static final String url = "https://github.com/";
+	public static final String url = "https://raw.githubusercontent.com/";
 	public static final String tokenVersion = "VERSION", tokenRepo = "REPO";
 	//temporary builder
 	public static final StringBuilder check = new StringBuilder();
@@ -58,10 +58,10 @@ public class Updater {
 		
 		Fi temp = Fi.tempFile("update-check");
 		//try to find the file in the root
-		Http.get(url + rfinal + "/blob/master/mod.hjson")
+		Http.get(url + rfinal + "/master/" + file.name())
 		.error(e -> {
 			//try to find it in the assets folder
-			Http.get(url + rfinal + "/blob/master/assets/mod.hjson")
+			Http.get(url + rfinal + "/master/assets/" + file.name())
 			.error(ee -> {
 				Log.err("Couldn't fetch the remote metainfo file!");
 				Log.err(ee);
@@ -78,6 +78,8 @@ public class Updater {
 	}
 	
 	protected static void tryUpdate(Fi metainfo, float currentVersion, Mods.LoadedMod mod) {
+		Log.info("Reading remote metainfo for " + mof.name);
+		
 		ObjectMap<String, Object> info = readInfo(metainfo);
 		float newVersion = -1;
 		String newRepo = null; //migration support
