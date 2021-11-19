@@ -132,11 +132,12 @@ public class Updater {
 		InputStream read = null;
 		try {
 			read = meta.read();
-			check.setLength(0);
 			int b = 0;
 			
 			global:
 			while (b != -1) {
+				check.setLength(0);
+				
 				//skip to the next #!. ##! will be ignored.
 				while ((b = read.read()) != '#' || (b = read.read()) != '!'){
 					if (b == -1) break global;
@@ -160,7 +161,6 @@ public class Updater {
 						check.append((char) b);
 					}
 					String value = check.toString();
-					Log.info("key " + key + " value " + value);
 					map.put(key, value);
 				} else if (Character.isDigit((char) b)) { //it's a number, read as long as possible
 					check.append((char) b);
@@ -172,8 +172,6 @@ public class Updater {
 					
 					try {
 						float value = Float.valueOf(check.toString());
-						
-						Log.info("key " + key + " value " + value);
 						map.put(key, value);
 					} catch (Throwable e) {
 						continue global; //somehow they managed to break this failsafe system, ignore this token
