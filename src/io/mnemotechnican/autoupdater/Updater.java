@@ -78,7 +78,7 @@ public class Updater {
 	}
 	
 	protected static void tryUpdate(Fi metainfo, float currentVersion, Mods.LoadedMod mod) {
-		Log.info("Reading remote metainfo for " + mof.name);
+		Log.info("Reading remote metainfo for " + mod.name);
 		
 		ObjectMap<String, Object> info = readInfo(metainfo);
 		float newVersion = -1;
