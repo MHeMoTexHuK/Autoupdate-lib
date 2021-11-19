@@ -111,7 +111,7 @@ public class Updater {
 	protected static boolean validate(float currentVersion, String currentRepo) {
 		if (currentVersion == -1 || currentRepo.equals("")) {
 			Log.err("You must specify both current version and repo in your mod.hjson file!");
-			Log.err("Specify '#!" + tokenVersion + " number;' and '#!" + prefixRepo + " \"user/repository\"' in your mod.hjson file and try again!");
+			Log.err("Specify '#!" + tokenVersion + " number;' and '#!" + tokenRepo + " \"user/repository\"' in your mod.hjson file and try again!");
 			Log.err("Version: " + currentVersion + ", repo: " + currentRepo);
 			return false;
 		} else if (currentRepo.indexOf("/") == -1 || currentRepo.lastIndexOf("/") != currentRepo.indexOf("/")) {
