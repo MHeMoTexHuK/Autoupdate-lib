@@ -55,13 +55,14 @@ public class Updater {
 		//FUCKKKKKKKKKKKKKKKKKKKKING LAMBDAS
 		final float vfinal = currentVersion;
 		final String rfinal = currentRepo;
+		final String metaname = meta.name();
 		
 		Fi temp = Fi.tempFile("update-check");
 		//try to find the file in the root
-		Http.get(url + rfinal + "/master/" + meta.name())
+		Http.get(url + rfinal + "/master/" + metaname)
 		.error(e -> {
 			//try to find it in the assets folder
-			Http.get(url + rfinal + "/master/assets/" + meta.name())
+			Http.get(url + rfinal + "/master/assets/" + metaname)
 			.error(ee -> {
 				Log.err("Couldn't fetch the remote metainfo file!");
 				Log.err(ee);
