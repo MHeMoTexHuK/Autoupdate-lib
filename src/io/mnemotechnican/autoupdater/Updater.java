@@ -12,7 +12,7 @@ public class Updater {
 	
 	//todo: support for non-standard branches?
 	public static final String url = "https://raw.githubusercontent.com/";
-	public static final String tokenVersion = "VERSION", tokenRepo = "REPO";
+	public static final String tokenVersion = "VERSION", tokenRepo = "REPO", tokenBranch = "BRANCH", tokenNoUpdate = "NO_UPDATE";
 	//temporary builder
 	public static final StringBuilder check = new StringBuilder();
 	
@@ -41,41 +41,40 @@ public class Updater {
 		
 		ObjectMap<String, Object> info = readInfo(meta);
 		float currentVersion = -1;
-		String currentRepo = null;
+		String currentRepo = null, currentBranch = null;
+		
 		try {
 			currentVersion = (Float) info.get(tokenVersion, -1f);
 			currentRepo = String.valueOf(info.get(tokenRepo, ""));
-		} catch (Exception e) {
-			Log.err("Incorrect token value!");
-			Log.err(e.toString()); //no need to print stack trace
-			return;
-		}
-		if (!validate(currentVersion, currentRepo)) return;
-		
-		//FUCKKKKKKKKKKKKKKKKKKKKING LAMBDAS
-		final float vfinal = currentVersion;
-		final String rfinal = currentRepo;
-		final String metaname = meta.name();
-		
-		Fi temp = Fi.tempFile("update-check");
-		//try to find the file in the root
-		Http.get(url + rfinal + "/master/" + metaname)
-		.error(e -> {
-			//try to find it in the assets folder
-			Http.get(url + rfinal + "/master/assets/" + metaname)
-			.error(ee -> {
-				Log.err("Couldn't fetch the remote metainfo file!");
-				Log.err(ee);
+			currentBranch = String.valueOf(info.get(tokenBranch, "master"));
+			
+			if (!validate(currentVersion, currentRepo)) return;
+			
+			Fi temp = Fi.tempFile("update-check");
+			//try to find the file in the root
+			Http.get(url + newRepo + "/" + newBranch + "/" + metaname)
+			.error(e -> {
+				//try to find it in the assets folder
+				Http.get(url + newRepo + "/" + newBranch + "/assets/" + metaname)
+				.error(ee -> {
+					Log.err("Couldn't fetch the remote metainfo file!"); //i did my best
+					Log.err(ee);
+				})
+				.submit(r -> {
+					temp.writeBytes(r.getResult());
+					tryUpdate(temp, vfinal, mod);
+				});
 			})
 			.submit(r -> {
 				temp.writeBytes(r.getResult());
 				tryUpdate(temp, vfinal, mod);
 			});
-		})
-		.submit(r -> {
-			temp.writeBytes(r.getResult());
-			tryUpdate(temp, vfinal, mod);
-		});
+		} catch (ClassCastException e) {
+			Log.err("Incorrect token value!");
+			Log.err(e.toString()); //no need to print stack trace
+		} catch (Exception e) {
+			Log.err(e);
+		}
 	}
 	
 	protected static void tryUpdate(Fi metainfo, float currentVersion, Mods.LoadedMod mod) {
@@ -87,28 +86,35 @@ public class Updater {
 		try {
 			newVersion = (Float) info.get(tokenVersion, -1f);
 			newRepo = String.valueOf(info.get(tokenRepo, ""));
-		} catch (Exception e) {
+			
+			if (info.get(tokenNoUpdate, null) != null) {
+				Log.info("The remote metadata file doesn't allow to update");
+				return;
+			}
+			
+			if (!validate(newVersion, newRepo)) return;
+			
+			if (newVersion > currentVersion) {
+				Vars.ui.showCustomConfirm(
+					"Update available",
+					"New version of " + mod.name + " available!",
+					"[green]Update",
+					"[red]Not now",
+					
+					() -> {
+						args[0] = newRepo;
+						Reflect.invoke(Vars.ui.mods, "githubImportMod", args, args2);
+						Vars.ui.mods.show()
+					},
+					
+					() -> {}
+				);
+			}
+		} catch (ClassCastException e) {
 			Log.err("Incorrect token value (remote file)!");
 			Log.err(e.toString()); //no need to print stack trace
-			return;
-		}
-		if (!validate(newVersion, newRepo)) return;
-		
-		if (newVersion > currentVersion) {
-			final String nrfinal = newRepo; //I FUCKING CAN'T
-			Vars.ui.showCustomConfirm(
-				"Update available",
-				"New version of " + mod.name + " available!",
-				"[green]Update",
-				"[red]Not now",
-				
-				() -> {
-					args[0] = nrfinal;
-					Reflect.invoke(Vars.ui.mods, "githubImportMod", args, args2);
-				},
-				
-				() -> {}
-			);
+		} catch (Exception e) {
+			Log.err(e);
 		}
 	}
 	
@@ -131,7 +137,7 @@ public class Updater {
 			: root.child("mod.json").exists() ? root.child("mod.json") : null;
 	}
 	
-	/** Reads the providen meta-info file and, unless an error occurs, returns an ObjectMap containing all control tokens and their respective values */
+	/** Reads the providen meta-info file and returns an ObjectMap containing all control tokens and their respective values */
 	protected static ObjectMap<String, Object> readInfo(Fi meta) {
 		ObjectMap<String, Object> map = new ObjectMap(4);
 		InputStream read = null;
@@ -182,6 +188,8 @@ public class Updater {
 					} catch (Throwable e) {
 						continue global; //somehow they managed to break this failsafe system, ignore this token
 					}
+				} else {
+					map.put(key, ""); //it just exists. may not be a token. 
 				}
 			}
 			
@@ -193,8 +201,7 @@ public class Updater {
 			try {
 				if (read != null) read.close();
 			} catch (Throwable e) {
-				Log.info("fuck checked exceptions");
-				throw new RuntimeException(e);
+				Log.err("death to checked exceptions", e);
 			}
 		}
 	}

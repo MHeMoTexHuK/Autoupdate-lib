@@ -17,14 +17,31 @@ If `dependencies` block already exists in your gradle file (and it probably does
 you should only add the `implementation...` line to the existing block.
 
 You must also specify the following lines in your `mod.(h)json` file. The file must be placed either in the root of your mod or in assets folder.
+
+The first line specifies the version which will be used for comparisons (must be a number), the second specifies the mod repo. Note that if the local and remote metadata files have differet repo values,
+the library will download a release from the repository specified ***in the remote metadata file***
 ```
 #!VERSION version
 #!REPO "author/repo"
 ```
+Optionally you can also specify the branch and a "no update" token.
+
+The first specifies the branch which will be used to check updates.
+
+If the latter is present in the __REMOTE__ (on the github repo) metadata file, the mod will NOT be updated even if the repo has a newer version.
+You can use this to prevent the library from showing phantom update notifications.
+```
+#!BRANCH "target_branch"
+#!NO_UPDATE #you don't have to specify anything here
+```
+You can comment a token to prevent it from being interpreted. I.e. `#!NO_UPDATE` ***will work*** and `##!NO_UPDATE` ***will be ignored***
+
 example:
 ```
 #!VERSION 2.4 (can be an integer or a float)
 #!REPO "MHeMoTexHuK/New-controls"
+#!BRANCH "master"
+##!NO_UPDATE
 ...normal mod info...
 ```
 Anything after the value of the token is ignored, i.e. you can type "4.2beta" and it'll be interpreted as "4.2" (float)
@@ -33,6 +50,5 @@ Call Updater.checkUpdates(currentMod) after client load and it'll check whether 
 If it has, it'll prompt the user to automatically update it and will download & install it.
 
 Note that the library checks the latest commit, ***but downloads the latest release***.
-Thus, you should only update #!VERSION upon a release, or else players would receive phantom update notifications.
 
 TODO: upload the artifact to maven or smth?
