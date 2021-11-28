@@ -17,13 +17,13 @@ If `dependencies` block already exists in your gradle file (and it probably does
 you should only add the `implementation...` line to the existing block.
 
 You must also specify the following lines in your `mod.(h)json` file. The file must be placed either in the root of your mod or in assets folder.
-
-The first line specifies the version which will be used for comparisons (must be a number), the second specifies the mod repo. Note that if the local and remote metadata files have differet repo values,
-the library will download a release from the repository specified ***in the remote metadata file***
 ```
 #!VERSION version
 #!REPO "author/repo"
 ```
+The first line specifies the version which will be used for comparisons (must be a number), the second specifies the mod repo. Note that if the local and remote metadata files have differet repo values,
+the library will download a release from the repository specified ***in the remote metadata file***
+
 Optionally you can also specify the branch and a "no update" token.
 
 The first specifies the branch which will be used to check updates.
@@ -34,14 +34,12 @@ You can use this to prevent the library from showing phantom update notification
 #!BRANCH "target_branch"
 #!NO_UPDATE 1
 ```
-You can comment a token to prevent it from being interpreted. I.e. `#!NO_UPDATE` ***will work*** and `##!NO_UPDATE` ***will be ignored***
-
 example of a mod.hjson file:
 ```
-#!VERSION 2.4 (can be an integer or a float)
-#!REPO "MHeMoTexHuK/New-controls"
-#!BRANCH "master"
-##!NO_UPDATE 1
+#!VERSION 2.4                       (can be an integer or a float, should be increased upon every release)
+#!REPO "MHeMoTexHuK/New-controls"   (checking https://github.com/MHeMoTexHuK/new-control)
+#!BRANCH "master"                   (checking the master branch)
+#!NO_UPDATE 0                       (updates will be performed)
 ...normal mod info...
 ```
 Anything after the value of the token is ignored, i.e. you can type "4.2beta" and it'll be interpreted as "4.2" (float)
