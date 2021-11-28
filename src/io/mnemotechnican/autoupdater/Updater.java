@@ -40,34 +40,32 @@ public class Updater {
 		}
 		
 		ObjectMap<String, Object> info = readInfo(meta);
-		float currentVersion = -1;
-		String currentRepo = null, currentBranch = null;
 		
 		try {
-			currentVersion = (Float) info.get(tokenVersion, -1f);
-			currentRepo = String.valueOf(info.get(tokenRepo, ""));
-			currentBranch = String.valueOf(info.get(tokenBranch, "master"));
+			final float currentVersion = (Float) info.get(tokenVersion, -1f);
+			final String currentRepo = String.valueOf(info.get(tokenRepo, ""));
+			final String currentBranch = String.valueOf(info.get(tokenBranch, "master"));
 			
 			if (!validate(currentVersion, currentRepo)) return;
 			
 			Fi temp = Fi.tempFile("update-check");
 			//try to find the file in the root
-			Http.get(url + newRepo + "/" + newBranch + "/" + metaname)
+			Http.get(url + currentRepo + "/" + currentBranch + "/" + metaname)
 			.error(e -> {
 				//try to find it in the assets folder
-				Http.get(url + newRepo + "/" + newBranch + "/assets/" + metaname)
+				Http.get(url + currentRepo + "/" + currentBranch + "/assets/" + metaname)
 				.error(ee -> {
 					Log.err("Couldn't fetch the remote metainfo file!"); //i did my best
 					Log.err(ee);
 				})
 				.submit(r -> {
 					temp.writeBytes(r.getResult());
-					tryUpdate(temp, vfinal, mod);
+					tryUpdate(temp, currentVersion, mod);
 				});
 			})
 			.submit(r -> {
 				temp.writeBytes(r.getResult());
-				tryUpdate(temp, vfinal, mod);
+				tryUpdate(temp, currentVersion, mod);
 			});
 		} catch (ClassCastException e) {
 			Log.err("Incorrect token value!");
@@ -81,11 +79,9 @@ public class Updater {
 		Log.info("Reading remote metainfo for " + mod.name);
 		
 		ObjectMap<String, Object> info = readInfo(metainfo);
-		float newVersion = -1;
-		String newRepo = null; //migration support
 		try {
-			newVersion = (Float) info.get(tokenVersion, -1f);
-			newRepo = String.valueOf(info.get(tokenRepo, ""));
+			final float newVersion = (Float) info.get(tokenVersion, -1f);
+			final String newRepo = String.valueOf(info.get(tokenRepo, ""));
 			
 			if (info.get(tokenNoUpdate, null) != null) {
 				Log.info("The remote metadata file doesn't allow to update");
