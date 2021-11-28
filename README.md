@@ -28,20 +28,20 @@ Optionally you can also specify the branch and a "no update" token.
 
 The first specifies the branch which will be used to check updates.
 
-If the latter is present in the __REMOTE__ (on the github repo) metadata file, the mod will NOT be updated even if the repo has a newer version.
+If the latter is present in the __REMOTE__ (on the github repo) metadata file and has any value other than 0, the mod will NOT be updated even if the repo has a newer version.
 You can use this to prevent the library from showing phantom update notifications.
 ```
 #!BRANCH "target_branch"
-#!NO_UPDATE #you don't have to specify anything here
+#!NO_UPDATE 1
 ```
 You can comment a token to prevent it from being interpreted. I.e. `#!NO_UPDATE` ***will work*** and `##!NO_UPDATE` ***will be ignored***
 
-example:
+example of a mod.hjson file:
 ```
 #!VERSION 2.4 (can be an integer or a float)
 #!REPO "MHeMoTexHuK/New-controls"
 #!BRANCH "master"
-##!NO_UPDATE
+##!NO_UPDATE 1
 ...normal mod info...
 ```
 Anything after the value of the token is ignored, i.e. you can type "4.2beta" and it'll be interpreted as "4.2" (float)
