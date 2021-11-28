@@ -51,3 +51,12 @@ If it has, it'll prompt the user to automatically update it and will download & 
 Note that the library checks the latest commit, ***but downloads the latest release***.
 
 TODO: upload the artifact to maven or smth?
+
+# About the control tokens
+The control tokens can be placed in any order in any place of the metadata file.
+
+You can put "#" before a token to prevent it from being interpreted.
+```
+#!NO_UPDATE 1   — interpreted, will prevent the mod from autoupdating
+##!NO_UPDATE 1  — not interpreted, will be ignored
+```
