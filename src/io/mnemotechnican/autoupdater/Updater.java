@@ -42,6 +42,7 @@ public class Updater {
 		ObjectMap<String, Object> info = readInfo(meta);
 		
 		try {
+			final String metaname = meta.name();
 			final float currentVersion = (Float) info.get(tokenVersion, -1f);
 			final String currentRepo = String.valueOf(info.get(tokenRepo, ""));
 			final String currentBranch = String.valueOf(info.get(tokenBranch, "master"));
