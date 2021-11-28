@@ -84,7 +84,7 @@ public class Updater {
 			final float newVersion = (Float) info.get(tokenVersion, -1f);
 			final String newRepo = String.valueOf(info.get(tokenRepo, ""));
 			
-			if (info.get(tokenNoUpdate, null) != null) {
+			if (info.get(tokenNoUpdate, () -> null) != null) {
 				Log.info("The remote metadata file doesn't allow to update");
 				return;
 			}

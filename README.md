@@ -46,6 +46,7 @@ example:
 ```
 Anything after the value of the token is ignored, i.e. you can type "4.2beta" and it'll be interpreted as "4.2" (float)
 
+### Actually checking for an update
 Call Updater.checkUpdates(currentMod) after client load and it'll check whether the repo has a newer version.
 If it has, it'll prompt the user to automatically update it and will download & install it.
 
