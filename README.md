@@ -28,18 +28,18 @@ Optionally you can also specify the branch and a "no update" token.
 
 The first specifies the branch which will be used to check updates.
 
-If the latter is present in the __REMOTE__ (on the github repo) metadata file and has any value other than 0, the mod will NOT be updated even if the repo has a newer version.
+If the latter is present in the __REMOTE__ (on the github repo) metadata file, the mod will NOT be updated even if the repo has a newer version.
 You can use this to prevent the library from showing phantom update notifications.
 ```
 #!BRANCH "target_branch"
-#!NO_UPDATE 1
+#!NO_UPDATE
 ```
 example of a mod.hjson file:
 ```
 #!VERSION 2.4                       (can be an integer or a float, should be increased upon every release)
 #!REPO "MHeMoTexHuK/New-controls"   (checking https://github.com/MHeMoTexHuK/new-control)
 #!BRANCH "master"                   (checking the master branch)
-#!NO_UPDATE 0                       (updates will be performed)
+#!NO_UPDATE                         (updates will be performed)
 ...normal mod info...
 ```
 Anything after the value of the token is ignored, i.e. you can type "4.2beta" and it'll be interpreted as "4.2" (float)
@@ -55,8 +55,4 @@ TODO: upload the artifact to maven or smth?
 # About the control tokens
 The control tokens can be placed in any order in any place of the metadata file.
 
-You can put "#" before a token to prevent it from being interpreted.
-```
-#!NO_UPDATE 1   — interpreted, will prevent the mod from autoupdating
-##!NO_UPDATE 1  — not interpreted, will be ignored
-```
+i forgor 💀
