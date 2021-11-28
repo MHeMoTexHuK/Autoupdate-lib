@@ -104,7 +104,7 @@ public class Updater {
 					() -> {
 						args[0] = newRepo;
 						Reflect.invoke(Vars.ui.mods, "githubImportMod", args, args2);
-						Vars.ui.mods.show()
+						Vars.ui.mods.show();
 					},
 					
 					() -> {}
