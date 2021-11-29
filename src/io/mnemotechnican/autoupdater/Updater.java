@@ -39,7 +39,6 @@ public class Updater {
 		}
 		
 		Log.info("Reading metainfo for " + mod.name);
-		
 		ObjectMap<String, Object> info = readInfo(meta);
 		try {
 			final String metaname = meta.name();
@@ -78,7 +77,6 @@ public class Updater {
 	
 	protected static void tryUpdate(Fi metainfo, float currentVersion, Mods.LoadedMod mod) {
 		Log.info("Reading remote metainfo for " + mod.name);
-		
 		ObjectMap<String, Object> info = readInfo(metainfo);
 		try {
 			final float newVersion = (Float) info.get(tokenVersion, -1f);
@@ -153,12 +151,17 @@ public class Updater {
 				
 				//read token name
 				
-				while ((b = read.read()) != ' ') {
+				while ((b = read.read()) != ' ' && b != '\n') {
 					if (b == -1) break global;
 					check.append((char) b);
 				}
 				String key = check.toString();
 				check.setLength(0);
+				
+				if (b == '\n') { //line break right after the token name, assume there's no value
+					map.put(key, "");
+					continue;
+				}
 				
 				//read token value. can be a string or a float.
 				b = read.read();
@@ -190,7 +193,7 @@ public class Updater {
 			
 			return map;
 		} catch (Exception e) {
-			Log.err("Exception occurred while reading mod info: " + meta.name(), e);
+			Log.err("Exception occurred while reading mod metainfo: " + meta.name(), e);
 			return map;
 		}
 	}
