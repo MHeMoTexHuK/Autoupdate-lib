@@ -10,7 +10,6 @@ import mindustry.mod.*;
 
 public class Updater {
 	
-	//todo: support for non-standard branches?
 	public static final String url = "https://raw.githubusercontent.com/";
 	public static final String tokenVersion = "VERSION", tokenRepo = "REPO", tokenBranch = "BRANCH", tokenNoUpdate = "NO_UPDATE";
 	//temporary builder
@@ -25,22 +24,23 @@ public class Updater {
 		var file = mod.file;
 		
 		Fi meta = null;
-		if (file.isDirectory()) {
-			meta = getMeta(file);
-		} else if (file == null) {
+		if (file == null) {
 			Log.err("Failed to check updates for: " + mod.name);
 			return;
+		} else if (file.isDirectory()) {
+			meta = getMeta(file);
 		} else {
 			meta = getMeta(new ZipFi(file));
 		}
 		
 		if (meta == null) {
-			Log.err("Unable to locate mod info file for: " + mod.name);
+			Log.err("Unable to locate mod metainfo file for: " + mod.name);
 			return;
 		}
 		
-		ObjectMap<String, Object> info = readInfo(meta);
+		Log.info("Reading metainfo for " + mod.name);
 		
+		ObjectMap<String, Object> info = readInfo(meta);
 		try {
 			final String metaname = meta.name();
 			final float currentVersion = (Float) info.get(tokenVersion, -1f);
@@ -137,10 +137,8 @@ public class Updater {
 	/** Reads the providen meta-info file and returns an ObjectMap containing all control tokens and their respective values */
 	protected static ObjectMap<String, Object> readInfo(Fi meta) {
 		ObjectMap<String, Object> map = new ObjectMap(4);
-		InputStream read = null;
-		try {
-			read = meta.read();
-	
+		
+		try (InputStream read = meta.read()) {
 			int b = 0;
 			
 			global:
@@ -194,12 +192,6 @@ public class Updater {
 		} catch (Exception e) {
 			Log.err("Exception occurred while reading mod info: " + meta.name(), e);
 			return map;
-		} finally {
-			try {
-				if (read != null) read.close();
-			} catch (Throwable e) {
-				Log.err("death to checked exceptions", e);
-			}
 		}
 	}
 	
