@@ -1,4 +1,4 @@
-package io.mnemotechnician.autoupdater;
+package com.github.mnemotechnician.autoupdater;
 
 import java.io.*;
 import arc.struct.*;
@@ -7,6 +7,7 @@ import arc.files.*;
 import arc.util.io.*;
 import mindustry.*;
 import mindustry.mod.*;
+import mindustry.mod.Mods.LoadedMod;
 
 public class Updater {
 	
@@ -20,8 +21,8 @@ public class Updater {
 	static final Class[] args2 = {String.class, boolean.class};
 	
 	public static void checkUpdates(Mod originMod) {
-		var mod = Vars.mods.getMod(originMod.getClass());
-		var file = mod.file;
+		LoadedMod mod = Vars.mods.getMod(originMod.getClass());
+		Fi file = mod.file;
 		
 		Fi meta = null;
 		if (file == null) {

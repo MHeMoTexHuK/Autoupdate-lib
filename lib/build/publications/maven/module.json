@@ -1,0 +1,60 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "autoupdate-lib",
+    "module": "autoupdate-lib",
+    "version": "unspecified",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.4.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "autoupdate-lib-unspecified.jar",
+          "url": "autoupdate-lib-unspecified.jar",
+          "size": 5642,
+          "sha512": "2f05aaea52ca688ce2288d5a1efae9b6fa8da49c27a330987709dc04869a57238407d4222269abf9f2b232466d7e6685b1b3fc10851940067af14eb4dfb86749",
+          "sha256": "a6da1384975abe8aefd27c5855585d1616f7f9e32913bd7101782351bbcad889",
+          "sha1": "888b5a41901cba7944b89ae1df152466c629cd1e",
+          "md5": "d449ed58a969ee2a42527a240e4b5ad8"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "autoupdate-lib-unspecified.jar",
+          "url": "autoupdate-lib-unspecified.jar",
+          "size": 5642,
+          "sha512": "2f05aaea52ca688ce2288d5a1efae9b6fa8da49c27a330987709dc04869a57238407d4222269abf9f2b232466d7e6685b1b3fc10851940067af14eb4dfb86749",
+          "sha256": "a6da1384975abe8aefd27c5855585d1616f7f9e32913bd7101782351bbcad889",
+          "sha1": "888b5a41901cba7944b89ae1df152466c629cd1e",
+          "md5": "d449ed58a969ee2a42527a240e4b5ad8"
+        }
+      ]
+    }
+  ]
+}

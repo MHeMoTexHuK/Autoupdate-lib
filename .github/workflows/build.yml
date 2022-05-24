@@ -18,9 +18,9 @@ jobs:
       with:
         java-version: 16
     - name: Build library jar
-      run: ./gradlew deploy
+      run: ./gradlew jar
     - name: Upload built jar file
       uses: actions/upload-artifact@v2
       with:
         name: Artifact
-        path: build/libs/${{ github.event.repository.name }}.jar
+        path: lib/build/libs/*.jar
