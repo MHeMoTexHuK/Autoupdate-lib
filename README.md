@@ -1,22 +1,13 @@
 ## Autoupdate lib
 Allows mindustry mods to easily check for updates and notify the user about them.
 
-## Usage
-The jar artifact of the library must be added to the mod as an implementation dependency in order for it to work.
-Theres a simple way to add it:
-1. Download a jar file from the "releases" tab
-2. Create a subfolder `lib/` in your mod project
-3. Copy the jar file to the `lib/` folder
-4. Add the following lines to your `build.gradle` file:
+## Setup
+Add the following line to the `dependencies {}` block of your `build.gradle` or `build.gradle.kts` file:
+```kotlin
+	implementation("com.github.mnemotechnician:autoupdate-lib:master-SNAPSHOT")
 ```
-dependencies {
-	implementation files("lib/Autoupdate-lib.jar")
-}
-```
-If the `dependencies` block already exists in your gradle file (and it probably does),
-you should only add the `implementation...` line to the said block.
 
-You must also specify the following lines in your `mod.(h)json` file. The file must be placed either in the root of your mod or in assets folder.
+You must specify the following lines in your `mod.(h)json` file. The file must be placed either in the root of your mod or in assets folder.
 ```
 #!VERSION version
 #!REPO "author/repo"
