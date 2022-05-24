@@ -41,7 +41,6 @@ If it does, the library will prompt the user to automatically download & install
 
 Note that the library checks the latest commit, ***but downloads the latest release***. 
 If there's a mismatch between these two, the user may receive phantom update notifications!
-TODO: upload the artifact to maven or smth?
 
 # About the control tokens
 The control tokens can be placed in any order in any place of the metadata file.
